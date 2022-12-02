@@ -1,0 +1,6 @@
+.cpcache/
+.nrepl-port
+zig-cache/
+zig-out/
+session.clj
+*.zig
