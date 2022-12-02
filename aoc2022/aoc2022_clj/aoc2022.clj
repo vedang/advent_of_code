@@ -10,12 +10,13 @@
      (-> url
          (client/get {:headers {:cookie *cookie-string*}})
          :body
-         (str/split #"\n")))))
+         str/split-lines))))
 
 (defn aoc-url
   [year day]
   (format "https://adventofcode.com/%s/day/%s/input" year day))
 
+;;; ================
 (defn day-1-part-1
   []
   (->> (aoc-url 2022 01)
@@ -39,44 +40,43 @@
        (take 3)
        (apply +)))
 
-(let [code->move {"A" :rock
-                  "X" :rock
-                  "B" :paper
-                  "Y" :paper
-                  "C" :scissors
-                  "Z" :scissors}
-      wins {:rock :paper
-            :paper :scissors
-            :scissors :rock}
-      loses (reduce (fn [acc [k v]] (assoc acc v k)) {} wins)
-      score {:lose 0, :paper 2, :scissors 3, :rock 1, :win 6, :draw 3}
-      strategy (get-input (aoc-url 2022 02))]
+;;; Total Time taken for day 1: 21 minutes
+;;; ================
+
+(let [->move {"A" :rock "X" :rock
+              "B" :paper "Y" :paper
+              "C" :scissors "Z" :scissors}
+      ->loses {:rock :paper
+               :paper :scissors
+               :scissors :rock}
+      ->wins (reduce (fn [acc [k v]] (assoc acc v k)) {} ->loses)
+      score {:lose 0 :draw 3 :win 6
+             :rock 1 :paper 2 :scissors 3}]
 
   (defn day-2-part-1
     []
-    (->> strategy
+    (->> (aoc-url 2022 02)
+         get-input
          (map (fn [s]
-                (let [play (map code->move (str/split s #" "))]
-                  (+ (score (second play))
-                     (cond
-                       (= (second play) (wins (first play))) (score :win)
-                       (= (second play) (first play)) (score :draw)
-                       (= (second play) (loses (first play))) (score :lose))))))
+                (let [[them us] (map ->move (str/split s #" "))]
+                  (cond
+                    (= us (->loses them)) (+ (score us) (score :win))
+                    (= us them) (+ (score us) (score :draw))
+                    :else (+ (score us) (score :lose))))))
          (apply +)))
 
  (defn day-2-part-2
    []
-   (apply +
-          (map (fn [s]
-                 (let [[m strat] (str/split s #" ")
-                       move (code->move m)
-                       our-move (case strat
-                                  "X" (loses move)
-                                  "Y" move
-                                  "Z" (wins move))]
-                   (+ (score our-move)
-                      (case strat
-                        "Z" (score :win)
-                        "Y" (score :draw)
-                        "X" (score :lose)))))
-               strategy))))
+   (->> (aoc-url 2022 02)
+        get-input
+        (map (fn [s]
+               (let [[play strat] (str/split s #" ")
+                     move (->move play)]
+                 (case strat
+                   "Z" (+ (score (->loses move)) (score :win))
+                   "Y" (+ (score move) (score :draw))
+                   "X" (+ (score (->wins move)) (score :lose))))))
+        (apply +))))
+
+;;; Total time taken for day 2: 19 minutes
+;;; ================
