@@ -1,0 +1,5 @@
+* Advent of Code!
+
+My plan is to solve as many advent of code puzzles here in this repository as time permits. I will probably solve them in Clojure, which is the language I'm most comfortable in, but I also want to experiment with learning other languages.
+
+I don't expect the code to be "good" because my plan is to prefer speed. I'm sure I'll clean up the code somewhat before committing, but these will be small cosmetic changes and not "the best way to solve" the problem.
